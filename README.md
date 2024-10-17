@@ -9,6 +9,12 @@ Prova /alumne/?orderby=asc
 Sortida:
 ![alt text](/captures/image-1.png)
 
+Prova /alumne/?orderby=desc
+![alt text](/captures/image-7.png)
+
+Sortida:
+![alt text](/captures/image-8.png)
+
 Prova /alumne/?contain=ar
 ![alt text](/captures/image-3.png)
 
@@ -16,7 +22,7 @@ Sortida:
 ![alt text](/captures/image-4.png)
 
 Prova /alumne/?skip=1&limit=10
-![alt text](image-5.png)
+![alt text](/captures/image-5.png)
 
 Sortida:
-![alt text](image-6.png)
+![alt text](/captures/image-6.png)
