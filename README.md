@@ -26,3 +26,9 @@ Prova /alumne/?skip=1&limit=10
 
 Sortida:
 ![alt text](/captures/image-6.png)
+
+Prova Càrrega massiva d’alumnes
+![alt text](/captures/image-10.png)
+
+Sortida:
+![alt text](/captures/image-20.png)

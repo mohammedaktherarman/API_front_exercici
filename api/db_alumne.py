@@ -49,64 +49,16 @@ def idAlumne(id: int):
         conn = db_client()
         cur = conn.cursor()
 
-        cur.execute("select * from alumne where IdAlumne = %s", (id,))
+        query = "select * from alumne where IdAlumne = %s"
+        values = (id)
+
+        cur.execute(query, values)
         alumne = cur.fetchone()
 
     finally:
         conn.close()
 
     return alumne
-
-def afegirAlumne(IdAula: int, NomAlumne: str, Cicle: str, Curs: str, Grup: str):
-    try:
-        conn = db_client()
-        cur = conn.cursor()
-
-        query = "insert into alumne (IdAula, NomAlumne, Cicle, Curs, Grup) values (%s, %s, %s, %s, %s)"
-        values = (IdAula, NomAlumne, Cicle, Curs, Grup)
-
-        cur.execute(query, values)
-        conn.commit()
-
-        return cur.lastrowid
-    except Exception as e:
-        print(f"error: {e}")
-        return None
-    finally:
-        conn.close()
-
-def afegirAula(DescAula: str, Edifici: str, Pis: str):
-    try:
-        conn = db_client()
-        cur = conn.cursor()
-
-        query = "insert into aula (DescAula, Edifici, Pis) values (%s, %s, %s)"
-
-        values = (DescAula, Edifici, Pis)
-        cur.execute(query, values)
-        conn.commit()
-
-        return cur.lastrowid
-    
-    except Exception as e:
-        print(f"error: {e}")
-        return None
-    
-    finally:
-        conn.close()
-
-def existeixAula(IdAula: int) -> bool:
-    try:
-        conn = db_client()
-        cur = conn.cursor()
-
-        cur.execute("select count(*) from aula where IdAula = %s", (IdAula,))
-        count = cur.fetchone()[0]
-
-        return count > 0
-    
-    finally:
-        conn.close()
 
 def actualizaAlumne(id, IdAula, NomAlumne, Cicle, Curs, Grup):
     try:
@@ -132,9 +84,13 @@ def borrarAlumne(id):
         conn = db_client()
         cur = conn.cursor()
 
-        cur.execute("delete from alumne where IdAlumne = %s", (id,))
+        query = "delete from alumne where IdAlumne = %s"
+        
+        values = (id)
 
+        cur.execute(query, values)
         conn.commit()
+
     except Exception as e:
         return {"status": -1, "message": f"Error: {e}"}
     
@@ -157,3 +113,79 @@ def llistaAlumne2():
         conn.close()
 
     return alumnes
+
+
+
+
+def afegirAula(DescAula: str, Edifici: str, Pis: str):
+    try:
+        conn = db_client()
+        cur = conn.cursor()
+
+        query = "insert into aula (DescAula, Edifici, Pis) values (%s, %s, %s)"
+        values = (DescAula, Edifici, Pis)
+
+        cur.execute(query, values)
+        conn.commit()
+
+        return cur.lastrowid
+    
+    except Exception as e:
+        return {"status": -1, "message": f"Error: {e}"}
+    
+    finally:
+        conn.close()
+
+
+def afegirAlumne(DescAula: str, NomAlumne: str, Cicle: str, Curs: str, Grup: str):
+    try:
+        conn = db_client()
+        cur = conn.cursor()
+
+        query = "insert into alumne (IdAula, NomAlumne, Cicle, Curs, Grup) values ((select IdAula from aula where DescAula = %s), %s, %s, %s, %s)"
+        values = (DescAula, NomAlumne, Cicle, Curs, Grup)
+
+        cur.execute(query, values)
+        conn.commit()
+
+        return cur.lastrowid
+    
+    except Exception as e:
+        return {"status": -1, "message": f"Error: {e}"}
+    
+    finally:
+        conn.close()
+
+
+def existeixAula(DescAula: str) -> bool:
+    try:
+        conn = db_client()
+        cur = conn.cursor()
+
+        query = "select count(*) from aula where DescAula = %s"
+        values = (DescAula,) 
+
+        cur.execute(query, values)
+        count = cur.fetchone()[0]
+
+        return count > 0
+    
+    finally:
+        conn.close()
+
+
+def existeixAlumne(NomAlumne: str, Cicle: str, Curs: str, Grup: str) -> bool:
+    try:
+        conn = db_client()
+        cur = conn.cursor()
+
+        query = """select count(*) from alumne where NomAlumne = %s and Cicle = %s and Curs = %s and Grup = %s"""
+        values = (NomAlumne, Cicle, Curs, Grup)
+        
+        cur.execute(query, values)
+        count = cur.fetchone()[0]
+
+        return count > 0
+    
+    finally:
+        conn.close()

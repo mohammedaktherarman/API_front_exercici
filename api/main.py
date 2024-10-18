@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+import csv
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
-from db_alumne import (llistaAlumne,idAlumne,afegirAlumne,existeixAula,actualizaAlumne,borrarAlumne,llistaAlumne2)
+from db_alumne import (llistaAlumne,idAlumne,afegirAlumne,existeixAula,actualizaAlumne,borrarAlumne,llistaAlumne2,existeixAlumne,afegirAula)
 from alumnes import alumnes_schema, alumne_schema
 from alumnes2 import alumnes_schema2
 
@@ -76,3 +77,29 @@ def borrar(id: int):
 def llistaTot():
     alumnes = llistaAlumne2()
     return alumnes_schema2(alumnes)
+
+@app.post("/alumne/loadAlumnes", response_model=dict)
+async def carregaMasivaAlumnes(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+
+        linies = contents.split(b'\n')  
+        
+        for linia in linies:
+            liniaBuida = linia.strip()
+            if liniaBuida:  
+                dades = linia.decode('utf-8').split(',')  
+                DescAula, Edifici, Pis, NomAlumne, Cicle, Curs, Grup = dades
+
+                if existeixAula(DescAula) == False:
+                    afegirAula(DescAula, Edifici, Pis)
+
+                if existeixAlumne(NomAlumne, Cicle, Curs, Grup) == False:
+                    afegirAlumne(DescAula, NomAlumne, Cicle, Curs, Grup)
+        
+        return {"message": "Carga masiva completada exitosamente"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en el proceso de carga: {e}")
+
+
