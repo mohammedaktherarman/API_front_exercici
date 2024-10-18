@@ -82,9 +82,12 @@ def llistaTot():
 async def carregaMasivaAlumnes(file: UploadFile = File(...)):
     try:
         contents = await file.read()
+        linies = contents.split(b'\n')
 
-        linies = contents.split(b'\n')  
+        resultat = []
         
+        linies = linies[1:]
+
         for linia in linies:
             liniaBuida = linia.strip()
             if liniaBuida:  
@@ -93,11 +96,17 @@ async def carregaMasivaAlumnes(file: UploadFile = File(...)):
 
                 if existeixAula(DescAula) == False:
                     afegirAula(DescAula, Edifici, Pis)
+                else:
+                    resultat.append(f"L'aula {DescAula} ja existeix. No s'ha afegit.")
 
                 if existeixAlumne(NomAlumne, Cicle, Curs, Grup) == False:
+                    
                     afegirAlumne(DescAula, NomAlumne, Cicle, Curs, Grup)
-        
-        return {"message": "Carga masiva completada exitosamente"}
+                    resultat.append(f"Carrega masiva feta correctament")
+                else:
+                    resultat.append(f"L'alumne {NomAlumne} ja existeix amb els mateixos dates. No s'ha afegit.")
+
+        return {"message": resultat}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error en el proceso de carga: {e}")
